@@ -49,7 +49,10 @@ class DummyContentWizard extends AbstractNode
                 //  CKEDITOR.instances.data_tt_content__7__header_.insertText("Magical ponies await!")
                 $onChange = $loremIpsum . 'CKEDITOR.instances.' . $itemNameRTE . '.setData(loremIpsum.generate()); CKEDITOR.instances.' . $itemNameRTE . '.resetDirty(); this.blur(); return false;';
             } else {
-                $onChange = $loremIpsum . 'document.querySelectorAll(' . GeneralUtility::quoteJSvalue('[data-formengine-input-name="' . $itemName . '"]') . ')[0]' . '.value=loremIpsum.generate(); this.blur(); return false;';
+                $onChange = $loremIpsum . 'var el = document.querySelectorAll(' . GeneralUtility::quoteJSvalue('[data-formengine-input-name="' . $itemName . '"]') . ')[0]; '.
+                    'el.value=loremIpsum.generate(); '.
+                    'TBE_EDITOR.fieldChanged_fName("' . $itemName . '", "' . $itemName . '"); '.
+                    'this.blur(); return false;';
             }
 
             $html[] = '<button type="button" class="btn btn-info"  onclick="' . htmlspecialchars($onChange) . '">' . htmlspecialchars($title) . '</button>';
