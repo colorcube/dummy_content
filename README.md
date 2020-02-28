@@ -14,6 +14,8 @@ add dummy text to the form field.
 Install the extension by using composer and `composer req colorcube/dummy-content` or by downloading it in the extension
 manager or on https://extensions.typo3.org/extension/dummy_content/.
 
+Tested with TYPO3 v 9.5. Might work with 8 and 10.
+
 ## Usage
 
 Click on the dummy text buttons to create texts with different length. The text replaces the current content.
@@ -40,6 +42,7 @@ Have a look in `Configuration/TCA/Overrides` and the way the TCA configuration i
 
 ## Todo
 
+- check for compatibility with TYPO3 8 and 10
 - add more configuration for common used content types like news or image captions
 - would be nice to have a way to quickly add images like the old dummy_content extension did
 - use different text for languages with non-ascii alphabets like russian
