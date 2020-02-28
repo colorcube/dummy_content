@@ -2,7 +2,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Dummy Content',
-	'description' => 'Spice up your development with good dummy content!',
+	'description' => 'Spice up your development with good dummy content! (lorem ipsum)',
 	'category' => 'be',
     'author' => 'René Fritz',
     'author_email' => 'info@colorcube.de',

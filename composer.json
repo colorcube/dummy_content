@@ -1,8 +1,26 @@
 {
     "name": "colorcube/dummy-content",
-    "description": "Dummy Content is a TYPO3 extension that helps to add dummy text to pages and content elements",
+    "description": "Dummy Content is a TYPO3 extension that helps to add dummy text to pages and content elements (lorem ipsum)",
     "type": "typo3-cms-extension",
     "license": "GPL-2.0-or-later",
+    "keywords": [
+        "TYPO3",
+        "extension",
+        "dummy text",
+        "lorem ipsum"
+    ],
+    "homepage": "https://github.com/colorcube/dummy_content",
+    "support": {
+        "issues": "https://github.com/colorcube/dummy_content/issues"
+    },
+    "authors": [
+        {
+            "name": "René Fritz",
+            "email": "r.fritz@colorcube.de",
+            "role": "Developer",
+            "homepage": "https://www.colorcube.de"
+        }
+    ],
     "require": {
         "typo3/cms-backend": "^9.5",
         "typo3/cms-core": "^9.5"
