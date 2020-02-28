@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+    <file source-language="en" target-language="de">
+        <body>
+            <trans-unit id="short">
+                <source>short</source>
+                <target>Kurz</target>
+            </trans-unit>
+            <trans-unit id="medium">
+                <source>medium</source>
+                <target>Mittel</target>
+            </trans-unit>
+            <trans-unit id="long">
+                <source>long</source>
+                <target>Lang</target>
+            </trans-unit>
+            <trans-unit id="dummyText">
+                <source>Dummy text:</source>
+                <target>Blindtext:</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

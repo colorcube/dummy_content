@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en">
+		<body>
+			<trans-unit id="short">
+				<source>short</source>
+			</trans-unit>
+			<trans-unit id="medium">
+				<source>medium</source>
+			</trans-unit>
+			<trans-unit id="long">
+				<source>long</source>
+			</trans-unit>
+			<trans-unit id="dummyText">
+				<source>Dummy text:</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,23 @@
+{
+    "name": "colorcube/dummy-content",
+    "description": "Dummy Content is a TYPO3 extension that helps to add dummy text to pages and content elements",
+    "type": "typo3-cms-extension",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "typo3/cms-backend": "^9.5",
+        "typo3/cms-core": "^9.5"
+    },
+    "replace": {
+        "typo3-ter/dummy-content": "self.version"
+    },
+    "autoload": {
+        "psr-4": {
+            "Colorcube\\DummyContent\\": "Classes/"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "dummy_content"
+        }
+    }
+}
