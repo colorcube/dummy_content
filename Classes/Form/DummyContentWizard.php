@@ -76,7 +76,7 @@ class DummyContentWizard extends AbstractNode
         try {
             // this doesn't work for sys_language_uid = 0  :-( returns DEF
             // $lang = $this->data['systemLanguageRows'][$data['databaseRow']['sys_language_uid']]['iso'];
-            $site = GeneralUtility::makeInstance(SiteMatcher::class)->matchByPageId($data['databaseRow']['pid']);
+            $site = GeneralUtility::makeInstance(SiteMatcher::class)->matchByPageId((int)$data['databaseRow']['pid']);
             $siteLanguage = $site->getLanguageById((int)$data['databaseRow']['sys_language_uid'][0]);
             return $siteLanguage->getTwoLetterIsoCode() ?? 'en';
         } catch (\Exception $e) {
