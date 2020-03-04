@@ -9,6 +9,12 @@ With this extension an editor can quickly add some dummy text to pages and conte
 Buttons are added to a set of backend form fields like _title_, _header_, _bodytext_. A click on those buttons will
 add dummy text to the form field.
 
+Currently following content types are preconfigured
+
+- pages
+- content (tt_content)
+- news (tx_news_domain_model_news)
+
 ## Installation
 
 Install the extension by using composer and `composer req colorcube/dummy-content` or by downloading it in the extension
@@ -43,9 +49,10 @@ Have a look in `Configuration/TCA/Overrides` and the way the TCA configuration i
 ## Todo
 
 - check for compatibility with TYPO3 8 and 10
-- add more configuration for common used content types like news or image captions
+- add more configuration for common used content types like tt_address or image captions
 - would be nice to have a way to quickly add images like the old dummy_content extension did
 - use different text for languages with non-ascii alphabets like russian
+- add generator for author names or dates (past and future)
 
 
 ## Contribute

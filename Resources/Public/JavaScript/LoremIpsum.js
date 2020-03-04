@@ -44,8 +44,8 @@ define(function () {
     LoremIpsum.prototype.config = {
         'minWords': 15,
         'maxWords': 30,
-        'minParagraphs': 1,
-        'maxParagraphs': 1,
+        'minParagraphs': 0,
+        'maxParagraphs': 0,
         'html': false
     };
 
@@ -318,10 +318,6 @@ define(function () {
         var paragraphs = [];
         var wordsAvailable = this._count(minWords, maxWords);
 
-        minParagraphs = Math.max(minParagraphs, 1);
-        maxParagraphs = Math.max(minParagraphs, maxParagraphs);
-        var countParagraphs = this._count(minParagraphs, maxParagraphs);
-
         // append sentences until limit is reached
         while (wordsAvailable > 3) {
             var maxWordsPerSentence = this._random(10, 25);
@@ -330,15 +326,20 @@ define(function () {
             paragraphs.push(words.join(" "));
         }
 
-        var minInsertPos = 1;
-        var maxInsertPos = paragraphs.length - 1;
-        for (var i = 1; i <= countParagraphs; i++) {
-            var insert = this._count(minInsertPos, maxInsertPos);
-            if (paragraphs[insert] === "\n" || paragraphs[insert - 1] === "\n" || paragraphs[insert + 1] === "\n") {
-                continue;
+        minParagraphs = Math.max(minParagraphs, 0);
+        maxParagraphs = Math.max(minParagraphs, maxParagraphs);
+        if (maxParagraphs) {
+            var countParagraphs = this._count(minParagraphs, maxParagraphs);
+            var minInsertPos = 1;
+            var maxInsertPos = paragraphs.length - 1;
+            for (var i = 1; i <= countParagraphs; i++) {
+                var insert = this._count(minInsertPos, maxInsertPos);
+                if (paragraphs[insert] === "\n" || paragraphs[insert - 1] === "\n" || paragraphs[insert + 1] === "\n") {
+                    continue;
+                }
+                paragraphs.splice(insert, 0, "\n");
+                maxInsertPos++;
             }
-            paragraphs.splice(insert, 0, "\n");
-            maxInsertPos++;
         }
 
         var result = '';
@@ -350,7 +351,7 @@ define(function () {
                     .replace(/<p>\n/g, '<p>')
                 + '</p>';
         } else {
-            result = paragraphs.join(' ').replace(/\n\n/g, "\n");
+            result = paragraphs.join(' ').replace(/\n /g, "\n").replace(/\n\n/g, "\n");
         }
 
         return result;
