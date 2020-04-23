@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Colorcube\DummyContent\Form;
 
 
-use mysql_xdevapi\Exception;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -68,17 +67,26 @@ class DummyContentWizard extends AbstractNode
 
     /**
      * Returns language iso 2 code for record
+     *
+     * not perfectly working!
+     *
      * @param $data
      * @return string
      */
     protected function getRecordLanguage($data)
     {
         try {
-            // this doesn't work for sys_language_uid = 0  :-( returns DEF
-            // $lang = $this->data['systemLanguageRows'][$data['databaseRow']['sys_language_uid']]['iso'];
-            $site = GeneralUtility::makeInstance(SiteMatcher::class)->matchByPageId((int)$data['databaseRow']['pid']);
-            $siteLanguage = $site->getLanguageById((int)$data['databaseRow']['sys_language_uid'][0]);
-            return $siteLanguage->getTwoLetterIsoCode() ?? 'en';
+            if (class_exists("\TYPO3\CMS\Core\Routing\SiteMatcher")) {
+                // TYPO3 9.x
+                $site = GeneralUtility::makeInstance(SiteMatcher::class)->matchByPageId((int)$data['databaseRow']['pid']);
+                $siteLanguage = $site->getLanguageById((int)$data['databaseRow']['sys_language_uid'][0]);
+                return $siteLanguage->getTwoLetterIsoCode() ?? 'en';
+            } else {
+                // TYPO3 8.x
+                // this doesn't work for sys_language_uid = 0  :-( returns DEF
+                $lang = $this->data['systemLanguageRows'][$data['databaseRow']['sys_language_uid'][0]]['iso'];
+                return ($lang == 'DEF') ? 'en' : $lang;
+            }
         } catch (\Exception $e) {
         }
         return 'en';
