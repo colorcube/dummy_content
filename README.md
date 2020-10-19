@@ -20,7 +20,7 @@ Currently following content types are preconfigured
 Install the extension by using composer and `composer req colorcube/dummy-content` or by downloading it in the extension
 manager or on https://extensions.typo3.org/extension/dummy_content/.
 
-Tested with TYPO3 v 9.5. Might work with 8 and 10.
+Tested with TYPO3 v8.7, v9.5 and v10.4. 
 
 ## Usage
 
@@ -46,9 +46,40 @@ and fields than the predefined.
 
 Have a look in `Configuration/TCA/Overrides` and the way the TCA configuration is added to enable the wizard button.
 
+## Usage in Own Extension
+
+You can provide TCA configuration in your own extension to activate dummy_content.
+
+Example for a extension *site_events*
+
+File site_events/Configuration/TCA/Overrides/tx_siteevents_domain_model_event.php:
+    
+   
+```php
+<?php
+if (class_exists('\Colorcube\DummyContent\TcaPresets')) {
+    $GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['title']['config']['fieldWizard'] = array_merge(
+        (array)($GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['title']['config']['fieldWizard']), 
+        \Colorcube\DummyContent\TcaPresets::getFieldControlForHeader()
+    );
+    $GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['subtitle']['config']['fieldWizard'] = array_merge(
+        (array)($GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['subtitle']['config']['fieldWizard']), 
+        \Colorcube\DummyContent\TcaPresets::getFieldControlForHeader()
+    );
+    $GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['teaser']['config']['fieldWizard'] = array_merge(
+        (array)($GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['teaser']['config']['fieldWizard']), 
+        \Colorcube\DummyContent\TcaPresets::getFieldControlForTeaser()
+    );
+    $GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['description']['config']['fieldWizard'] = array_merge(
+        (array)($GLOBALS['TCA']['tx_siteevents_domain_model_event']['columns']['description']['config']['fieldWizard']), 
+        \Colorcube\DummyContent\TcaPresets::getFieldControlForBodytext()
+    );
+} 
+```
+
 ## Todo
 
-- check for compatibility with TYPO3 8 and 10
+- check for compatibility with TYPO3 8
 - add more configuration for common used content types like tt_address or image captions
 - would be nice to have a way to quickly add images like the old dummy_content extension did
 - use different text for languages with non-ascii alphabets like russian
