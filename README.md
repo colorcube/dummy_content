@@ -31,7 +31,7 @@ Click on the dummy text buttons to create texts with different length. The text 
 ## Languages
 
 While the default dummy text is based on the well known 'Lorem ipsum', the generated text is modified to match the
-currently edited language if possible. For Example in the german language the umlauts äöüß are added. Currently rules
+currently edited language if possible. For Example in the german language the umlauts *äöüß* are added. Currently rules
 for the following languages are available:
 
 - german (de)
@@ -79,7 +79,6 @@ if (class_exists('\Colorcube\DummyContent\TcaPresets')) {
 
 ## Todo
 
-- check for compatibility with TYPO3 8
 - add more configuration for common used content types like tt_address or image captions
 - would be nice to have a way to quickly add images like the old dummy_content extension did
 - use different text for languages with non-ascii alphabets like russian
