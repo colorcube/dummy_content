@@ -1,6 +1,6 @@
 <?php
 
-$EM_CONF["dummy_content"] = array(
+$EM_CONF[$_EXTKEY] = array(
     'title' => 'Dummy Content',
     'description' => 'Spice up your development with good dummy content! (lorem ipsum)',
     'category' => 'be',
