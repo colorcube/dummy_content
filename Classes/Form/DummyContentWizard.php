@@ -29,7 +29,7 @@ class DummyContentWizard extends AbstractNode
 
         $parameterArray = $this->data['parameterArray'];
         $itemName = $parameterArray['itemFormElName'];
-        $isRTE = (bool)$parameterArray['fieldConf']['config']['enableRichtext'];
+        $isRTE = (bool)($parameterArray['fieldConf']['config']['enableRichtext'] ?? false);
 
         $html = [];
         $html[] = '<div class="help-block">';
@@ -79,7 +79,7 @@ class DummyContentWizard extends AbstractNode
             if (class_exists("\TYPO3\CMS\Core\Routing\SiteMatcher")) {
                 // TYPO3 9.x
                 $site = GeneralUtility::makeInstance(SiteMatcher::class)->matchByPageId((int)$data['databaseRow']['pid']);
-                $siteLanguage = $site->getLanguageById((int)$data['databaseRow']['sys_language_uid'][0]);
+                $siteLanguage = $site->getLanguageById((int)($data['databaseRow']['sys_language_uid'][0] ?? 0));
                 return $siteLanguage->getTwoLetterIsoCode() ?? 'en';
             } else {
                 // TYPO3 8.x
