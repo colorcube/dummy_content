@@ -50,7 +50,7 @@ class DummyContentWizard extends AbstractNode
             } else {
                 $onChange = $loremIpsum . 'var el = document.querySelectorAll(' . GeneralUtility::quoteJSvalue('[data-formengine-input-name="' . $itemName . '"]') . ')[0]; '.
                     'el.value=loremIpsum.generate(); '.
-                    'TBE_EDITOR.fieldChanged_fName("' . $itemName . '", "' . $itemName . '"); '.
+                    "el.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));".
                     'this.blur(); return false;';
             }
 
