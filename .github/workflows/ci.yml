@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*.*.*'
+  pull_request:
+
+jobs:
+  lint:
+    name: PHP ${{ matrix.php }} / TYPO3 ${{ matrix.typo3 }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.1'
+            typo3: '^12.4'
+          - php: '8.2'
+            typo3: '^12.4'
+          - php: '8.3'
+            typo3: '^13.4'
+          - php: '8.4'
+            typo3: '^13.4'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Validate composer.json
+        run: composer validate --strict
+
+      - name: PHP syntax check
+        run: find Classes Configuration ext_emconf.php ext_localconf.php -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Check Composer installability with TYPO3 ${{ matrix.typo3 }}
+        run: |
+          composer config --no-plugins allow-plugins.typo3/cms-composer-installers true
+          composer config --no-plugins allow-plugins.typo3/class-alias-loader true
+          composer require --no-interaction --no-progress typo3/cms-core:"${{ matrix.typo3 }}" typo3/cms-backend:"${{ matrix.typo3 }}"
+
+  publish-ter:
+    name: Publish to TYPO3 TER
+    needs: lint
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish to TER (if TYPO3_API_TOKEN is configured)
+        env:
+          TYPO3_API_TOKEN: ${{ secrets.TYPO3_API_TOKEN }}
+          TYPO3_EXTENSION_KEY: dummy_content
+        run: |
+          if [ -z "${TYPO3_API_TOKEN}" ]; then
+            echo "Notice: Secret TYPO3_API_TOKEN is not configured; skipping automatic TER upload."
+            exit 0
+          fi
+          VERSION="${GITHUB_REF_NAME#v}"
+          TAG_MSG="$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")"
+          if [ -z "${TAG_MSG}" ]; then
+            TAG_MSG="Release ${VERSION}"
+          fi
+          php -r 'echo "Using PHP " . PHP_VERSION . PHP_EOL;'
+          composer global config --no-plugins allow-plugins.typo3/cms-composer-installers true
+          composer global require typo3/tailor:^1.6 --no-interaction --no-progress
+          "$(composer global config bin-dir --absolute)/tailor" ter:publish --comment "${TAG_MSG}" "${VERSION}"

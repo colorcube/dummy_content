@@ -20,7 +20,7 @@ Currently following content types are preconfigured
 Install the extension by using composer and `composer req colorcube/dummy-content` or by downloading it in the extension
 manager or on https://extensions.typo3.org/extension/dummy_content/.
 
-Tested with TYPO3 v8.7, v9.5 and v10.4. 
+Compatible with TYPO3 v12.4 and v13.4 (for TYPO3 v8.7–v11.5 use version `1.3.4`).
 
 ## Usage
 
@@ -37,7 +37,7 @@ for the following languages are available:
 - german (de)
 - french (fr)
 
-Have a look into Resources/Public/JavaScript/LoremIpsum.js at `LoremIpsum.languages` how to add new languages.
+Have a look into `Resources/Public/JavaScript/ESM/LoremIpsum.js` at `LoremIpsum.prototype.languages` how to add new languages.
 
 ## Configuration
 

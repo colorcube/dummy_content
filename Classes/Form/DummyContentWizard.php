@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Colorcube\DummyContent\Form;
 
-
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Routing\SiteMatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -16,7 +16,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class DummyContentWizard extends AbstractNode
 {
     /**
-     * Render buttons which insert dummy text in form form fields
+     * Render buttons which insert dummy text in form fields
      *
      * @return array
      */
@@ -28,8 +28,9 @@ class DummyContentWizard extends AbstractNode
         $actions = $options['actions'];
 
         $parameterArray = $this->data['parameterArray'];
-        $itemName = $parameterArray['itemFormElName'];
+        $itemName = (string)$parameterArray['itemFormElName'];
         $isRTE = (bool)($parameterArray['fieldConf']['config']['enableRichtext'] ?? false);
+        $lang = $this->getRecordLanguage($this->data);
 
         $html = [];
         $html[] = '<div class="help-block">';
@@ -39,59 +40,57 @@ class DummyContentWizard extends AbstractNode
 
             unset($action['title']);
             $action['html'] = $isRTE;
-            $lang = $this->getRecordLanguage($this->data);
-            // is this the right way to get an instance with requirejs?
-            $loremIpsum = "var LoremIpsumObj = require('TYPO3/CMS/DummyContent/LoremIpsum'); var loremIpsum = new LoremIpsumObj(" . json_encode($action) . ", " . json_encode($lang) . "); ";
 
-            if ($isRTE) {
-                $itemNameRTE = $this->sanitizeFieldId($itemName);
-                //  CKEDITOR.instances.data_tt_content__7__header_.insertText("Magical ponies await!")
-                $onChange = $loremIpsum . 'CKEDITOR.instances.' . $itemNameRTE . '.setData(loremIpsum.generate()); CKEDITOR.instances.' . $itemNameRTE . '.resetDirty(); this.blur(); return false;';
-            } else {
-                $onChange = $loremIpsum . 'var el = document.querySelectorAll(' . GeneralUtility::quoteJSvalue('[data-formengine-input-name="' . $itemName . '"]') . ')[0]; '.
-                    'el.value=loremIpsum.generate(); '.
-                    "el.dispatchEvent(new Event('change', {bubbles: true, cancelable: true}));".
-                    'this.blur(); return false;';
+            $attributes = [
+                'type' => 'button',
+                'class' => 'btn btn-info',
+                'data-dummy-content-target' => $itemName,
+                'data-dummy-content-rte' => $isRTE ? '1' : '0',
+                'data-dummy-content-rte-id' => $isRTE ? $this->sanitizeFieldId($itemName) : '',
+                'data-dummy-content-action' => (string)json_encode($action),
+                'data-dummy-content-lang' => $lang,
+            ];
+
+            $attrParts = [];
+            foreach ($attributes as $attrName => $attrValue) {
+                if ($attrValue === '' && $attrName === 'data-dummy-content-rte-id') {
+                    continue;
+                }
+                $attrParts[] = $attrName . '="' . htmlspecialchars($attrValue, ENT_QUOTES) . '"';
             }
 
-            $html[] = '<button type="button" class="btn btn-info"  onclick="' . htmlspecialchars($onChange) . '">' . htmlspecialchars($title) . '</button>';
+            $html[] = '<button ' . implode(' ', $attrParts) . '>' . htmlspecialchars($title) . '</button>';
         }
         $html[] = '</div>';
 
+        $result = $this->initializeResultArray();
         $result['html'] = implode(LF, $html);
+        $result['javaScriptModules'][] = JavaScriptModuleInstruction::create('@colorcube/dummy_content/LoremIpsum.js');
 
-        $result['requireJsModules'] = ['TYPO3/CMS/DummyContent/LoremIpsum'];
         return $result;
     }
-
 
     /**
      * Returns language iso 2 code for record
      *
-     * not perfectly working!
-     *
-     * @param $data
+     * @param array $data
      * @return string
      */
-    protected function getRecordLanguage($data)
+    protected function getRecordLanguage(array $data): string
     {
         try {
-            if (class_exists("\TYPO3\CMS\Core\Routing\SiteMatcher")) {
-                // TYPO3 9.x
-                $site = GeneralUtility::makeInstance(SiteMatcher::class)->matchByPageId((int)$data['databaseRow']['pid']);
-                $siteLanguage = $site->getLanguageById((int)($data['databaseRow']['sys_language_uid'][0] ?? 0));
-                return $siteLanguage->getTwoLetterIsoCode() ?? 'en';
-            } else {
-                // TYPO3 8.x
-                // this doesn't work for sys_language_uid = 0  :-( returns DEF
-                $lang = $this->data['systemLanguageRows'][$data['databaseRow']['sys_language_uid'][0]]['iso'];
-                return ($lang == 'DEF') ? 'en' : $lang;
+            $rawLangUid = $data['databaseRow']['sys_language_uid'] ?? 0;
+            $languageId = is_array($rawLangUid) ? (int)($rawLangUid[0] ?? 0) : (int)$rawLangUid;
+            if ($languageId < 0) {
+                $languageId = 0;
             }
-        } catch (\Exception $e) {
+            $site = GeneralUtility::makeInstance(SiteMatcher::class)->matchByPageId((int)($data['databaseRow']['pid'] ?? 0));
+            $siteLanguage = $site->getLanguageById($languageId);
+            return $siteLanguage->getLocale()->getLanguageCode();
+        } catch (\Throwable $e) {
         }
         return 'en';
     }
-
 
     /**
      * @param string $itemFormElementName
@@ -99,14 +98,14 @@ class DummyContentWizard extends AbstractNode
      */
     protected function sanitizeFieldId(string $itemFormElementName): string
     {
-        $fieldId = preg_replace('/[^a-zA-Z0-9_:.-]/', '_', $itemFormElementName);
-        return htmlspecialchars(preg_replace('/^[^a-zA-Z]/', 'x', $fieldId));
+        $fieldId = (string)preg_replace('/[^a-zA-Z0-9_:.-]/', '_', $itemFormElementName);
+        return (string)preg_replace('/^[^a-zA-Z]/', 'x', $fieldId);
     }
 
     /**
      * @return LanguageService
      */
-    protected function getLanguageService()
+    protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }
@@ -119,4 +118,3 @@ class DummyContentWizard extends AbstractNode
         return $GLOBALS['BE_USER'];
     }
 }
-

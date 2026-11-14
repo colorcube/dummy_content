@@ -1,6 +1,6 @@
 <?php
 
-$EM_CONF[$_EXTKEY] = array(
+$EM_CONF[$_EXTKEY] = [
     'title' => 'Dummy Content',
     'description' => 'Spice up your development with good dummy content! (lorem ipsum)',
     'category' => 'be',
@@ -8,13 +8,12 @@ $EM_CONF[$_EXTKEY] = array(
     'author_email' => 'info@colorcube.de',
     'author_company' => 'Colorcube',
     'state' => 'stable',
-    'version' => '1.3.4',
-    'constraints' => array(
-        'depends' => array(
-            'typo3' => '8.7.0-11.5.99',
-        ),
-        'conflicts' => array(),
-        'suggests' => array(),
-    ),
-);
-
+    'version' => '1.4.0',
+    'constraints' => [
+        'depends' => [
+            'typo3' => '12.4.0-13.4.99',
+        ],
+        'conflicts' => [],
+        'suggests' => [],
+    ],
+];
